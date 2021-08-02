@@ -14,7 +14,7 @@ const User = require('../models/user');
 
 router.post('/register', async function (req, res, next) {
   let body = req.body;
-  console.log("#############",body);
+  // console.log("#############",body);
   let result = await User.register(body);
   return res.json(result);
 })

@@ -103,6 +103,19 @@ class User {
    */
 
   static async messagesFrom(username) {
+    const results = await db.query(
+      `SELECT id, to_username AS to_user, body, sent_at, read_at
+      FROM messages
+      WHERE from_username = $1`,
+      [username]);
+    
+    for (let result of results.rows) {
+      let to_user = result.to_user;
+
+      result.to_user = await User._getUser(to_user);
+    }
+  
+      return results.rows;
   }
 
   /** Return messages to this user.
@@ -110,12 +123,37 @@ class User {
    * [{id, from_user, body, sent_at, read_at}]
    *
    * where from_user is
-   *   {id, first_name, last_name, phone}
+   *   {username, first_name, last_name, phone}
    */
 
   static async messagesTo(username) {
+    const results = await db.query(
+      `SELECT id, from_username AS from_user, body, sent_at, read_at
+      FROM messages
+      WHERE to_username = $1`,
+      [username]);
+    
+    for (let result of results.rows) {
+      let from_user = result.from_user;
+
+      result.from_user = await User._getUser(from_user);
+    }
+  
+      return results.rows;
+  }
+
+  /** Helper Function to get a user {username, first_name, last_name, phone} */
+  static async _getUser(username) {
+    const userResult = await db.query(
+      `SELECT username, first_name, last_name, phone
+      FROM users
+      WHERE username = $1`,
+      [username]);
+
+      return userResult.rows[0];
   }
 }
+
 
 
 module.exports = User;
