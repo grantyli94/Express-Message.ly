@@ -39,14 +39,16 @@ class User {
           WHERE username = $1`,
       [username]);
     const user = result.rows[0];
+    
+    return user && await bcrypt.compare(password, user.password);
 
-    if (user) {
-      if (await bcrypt.compare(password, user.password) === true) {
-        return true;
-      }
-    }
+    // if (user) {
+    //   if (await bcrypt.compare(password, user.password) === true) {
+    //     return true;
+    //   }
+    // }
 
-    return false;
+    // return false;
   }
 
 
@@ -61,7 +63,7 @@ class User {
       [username]
     );
     
-    if (!result.rows[0]) throw new UnauthorizedError();
+    if (!result.rows[0]) throw new NotFoundError();
 
   }
 

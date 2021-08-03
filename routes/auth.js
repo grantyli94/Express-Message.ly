@@ -8,7 +8,7 @@ const { SECRET_KEY } = require('../config');
 // const JWT_OPTIONS = { expiresIn: 60 * 60 };
 
 const User = require('../models/user');
-const { BadRequestError } = require('../expressError');
+const { UnauthorizedError } = require('../expressError');
 
 /** POST /login: {username, password} => {token} */
 
@@ -19,7 +19,7 @@ router.post('/login', async function (req, res, next) {
     User.updateLoginTimestamp(username);
     return res.json({ token });
   }
-  throw new BadRequestError("Invalid user/password");
+  throw new UnauthorizedError("Invalid user/password");
 })
 
 /** POST /register: registers, logs in, and returns token.
